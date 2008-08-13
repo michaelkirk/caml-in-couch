@@ -101,13 +101,23 @@ let request_with_db ?(content=None) ?(headers=[]) db m components =
 	(Neturl.partial_url_syntax url_syntax) in
     request m (build_url components)
 
-let create_database db =
-  let r = request_with_db db (Http_method.Put Json_type.Null) [] in
-    Json_io.json_of_string (r # get_resp_body())
+module Database =
+  struct
+    exception DatabaseError of (int * string)
 
-let delete_database db =
-  let r = request_with_db db Http_method.Delete [] in
-    Json_io.json_of_string (r # get_resp_body())
+    let create db =
+      let r = request_with_db db (Http_method.Put Json_type.Null) [] in
+	Json_io.json_of_string (r # get_resp_body())
+
+    let create_ok db =
+      let _ = create db in (* TODO: Fixme! *)
+	()
+
+    let delete db =
+      let r = request_with_db db Http_method.Delete [] in
+	Json_io.json_of_string (r # get_resp_body())
+
+  end
 
 let get db doc_id =
   let r = request_with_db db Http_method.Get [doc_id] in
