@@ -22,16 +22,25 @@ module Http_method =
   end
 
 type t = string
-
-let mk_server url = url
-
 type db = {server: t;
 	   database: string}
 
 type doc_id = int
 
-let mk_database server db = {server = server;
-			     database = db}
+exception InvalidDatabase
+
+let mk_server url = url
+
+let mk_database server db =
+  let valid_db name =
+    let valid_db_names = Str.regexp "^[a-z0-9_$()+-/]+$" in      
+      Str.string_match valid_db_names name 0 in
+    if valid_db db
+    then
+      {server = server;
+       database = db}
+    else
+      raise InvalidDatabase
 	
 let get_default_pipe () =
   let p = new Http_client.pipeline in
