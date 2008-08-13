@@ -14,6 +14,9 @@ val mk_server : ?scheme:string -> ?port:int -> string -> t
 val mk_database : t -> string -> db
   (** Create a Database from a server and a name *)
 
+val mk_doc_id : int -> doc_id
+  (** Construct a doc_id from an integer *)
+
 val get : db -> doc_id -> Json_type.json_type
   (** Lowlevel GET *)
 

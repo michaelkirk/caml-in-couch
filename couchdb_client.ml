@@ -42,6 +42,7 @@ let mk_server
    scheme = scheme;
    port = port}
 
+let mk_doc_id i = i
 
 let mk_database server db =
   let valid_db name =
@@ -101,7 +102,7 @@ let get db doc_id =
   let r = request_with_db db Http_method.Get [doc_id_str] in
     Json_io.json_of_string (r # get_resp_body())
 
-let mk_doc_id i = i
+
 
 let create db json =
   let r = request_with_db db (Http_method.Post_raw json) [] in
