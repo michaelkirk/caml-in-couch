@@ -1,6 +1,7 @@
 Caml-in-couch
 
-Imagine a good nice comfy couch. Now imagine a Camel in said couch... Relax.
+Imagine a good nice comfy couch. Now imagine a Caml in said couch...
+  If you feel a little flat, then it is time to relax.
 
 These files constitutes a preliminary binding of CouchDB to Ocaml. It
 uses several libraries for convenience, but all of these are
