@@ -91,7 +91,7 @@ struct
       let call = Http_method.to_http_call mthod str_url in
       let augmented_headers =
 	headers @
-    ["Accept", "application/json"] @
+	  ["Accept", "application/json"] @
 	  match mthod with
 	    | Http_method.Put _ -> ["Content-Type", "application/json"]
 	    | _ -> [] in
