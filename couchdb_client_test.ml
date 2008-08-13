@@ -11,7 +11,7 @@ let test_fixture = "couchdb_client" >:::
 		      let _v = create_database test_db in
 			());
   "get" >:: ( fun () ->
-		let v = get test_db (mk_doc_id 0) in
+		let v = get test_db "0" in
 		let ht = make_table (objekt v) in
 		  assert_equal "0" (string (Hashtbl.find ht "_id"));
 		  assert_equal 0 (int (Hashtbl.find  ht "integer"));

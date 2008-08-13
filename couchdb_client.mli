@@ -5,8 +5,8 @@ type t
 type db
   (** Represents a CouchDB database *)
 
-type doc_id
-  (** Documentation identifiers *)
+type doc_id = string
+  (** Documentation identifiers: these are strings *)
 
 val mk_server : ?scheme:string -> ?port:int -> string -> t
   (** Construct a new CouchDB representation object *)
@@ -16,9 +16,6 @@ val mk_database : t -> string -> db
 
 val create_database : db -> Json_type.t
   (** Create a new Database on the CouchDB server *)
-
-val mk_doc_id : int -> doc_id
-  (** Construct a doc_id from an integer *)
 
 val get : db -> doc_id -> Json_type.t
   (** Lowlevel GET *)

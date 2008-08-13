@@ -32,7 +32,7 @@ type t = {hostname: string;
 type db = {server: t;
 	   database: string}
 
-type doc_id = int
+type doc_id = string
 
 exception InvalidDatabase
 
@@ -106,23 +106,19 @@ let create_database db =
     Json_io.json_of_string (r # get_resp_body())
 
 let get db doc_id =
-  let doc_id_str = string_of_int doc_id in
-  let r = request_with_db db Http_method.Get [doc_id_str] in
+  let r = request_with_db db Http_method.Get [doc_id] in
     Json_io.json_of_string (r # get_resp_body())
-
 
 let create db json =
   let r = request_with_db db (Http_method.Post_raw json) [] in
-    mk_doc_id (int_of_string (r # get_resp_body()))
+    (r # get_resp_body())
 
 let delete db doc_id =
-  let doc_id_str = string_of_int doc_id in
-  let _r = request_with_db db Http_method.Delete [doc_id_str] in
+  let _r = request_with_db db Http_method.Delete [doc_id] in
     () (* TODO: Handle errors! *)
 
 let update db doc_id json =
-  let doc_id_str = string_of_int doc_id in
-  let _r = request_with_db db (Http_method.Put json) [doc_id_str] in
+  let _r = request_with_db db (Http_method.Put json) [doc_id] in
     () (* TODO: Handle response! *)
 
 let info db =
