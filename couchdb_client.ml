@@ -93,8 +93,10 @@ let request_with_db ?(content=None) ?(headers=[]) db m components =
                  port = port}; database = db} = db in
   let build_url components =
     let url_syntax = Hashtbl.find Neturl.common_url_syntax "http" in
-    Neturl.make_url ~scheme ~port ~host ~path:(db :: components) 
-      url_syntax in
+    let path = "" :: db :: components in
+      Neturl.make_url
+	~scheme ~port ~host ~path
+	(Neturl.partial_url_syntax url_syntax) in
     request m (build_url components)
 
 let get db doc_id =
