@@ -14,7 +14,9 @@ module Http_method =
       match m with 
 	| Get -> new Http_client.get path
 	| Put json ->
-	    let str = Json_io.string_of_json ~compact:true json in
+	    let str = match json with
+	      | Json_type.Null -> ""
+	      | x -> Json_io.string_of_json ~compact:true json in
 	      new Http_client.put path str
 	| Post_raw json ->
 	    let str = Json_io.string_of_json ~compact:true json in
@@ -99,11 +101,14 @@ let request_with_db ?(content=None) ?(headers=[]) db m components =
 	(Neturl.partial_url_syntax url_syntax) in
     request m (build_url components)
 
+let create_database db =
+  let r = request_with_db db (Http_method.Put Json_type.Null) [] in
+    Json_io.json_of_string (r # get_resp_body())
+
 let get db doc_id =
   let doc_id_str = string_of_int doc_id in
   let r = request_with_db db Http_method.Get [doc_id_str] in
     Json_io.json_of_string (r # get_resp_body())
-
 
 
 let create db json =
