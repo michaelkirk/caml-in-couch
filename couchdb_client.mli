@@ -17,6 +17,9 @@ val mk_database : t -> string -> db
 val create_database : db -> Json_type.t
   (** Create a new Database on the CouchDB server *)
 
+val delete_database : db -> Json_type.t
+  (** Delete a database on the CouchDB server *)
+
 val get : db -> doc_id -> Json_type.t
   (** Lowlevel GET *)
 

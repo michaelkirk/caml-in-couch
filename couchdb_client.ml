@@ -105,6 +105,10 @@ let create_database db =
   let r = request_with_db db (Http_method.Put Json_type.Null) [] in
     Json_io.json_of_string (r # get_resp_body())
 
+let delete_database db =
+  let r = request_with_db db Http_method.Delete [] in
+    Json_io.json_of_string (r # get_resp_body())
+
 let get db doc_id =
   let r = request_with_db db Http_method.Get [doc_id] in
     Json_io.json_of_string (r # get_resp_body())
