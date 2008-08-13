@@ -1,5 +1,7 @@
 (* CouchDB Client implements a client for the CouchDB Document storage *)
 
+let default_couchdb_port = 5984
+
 module Http_method =
   struct
     type t = | Get 
@@ -21,7 +23,10 @@ module Http_method =
 	| Delete -> new Http_client.delete path
   end
 
-type t = string
+type t = {hostname: string;
+	  scheme: string;
+	  port: int}
+
 type db = {server: t;
 	   database: string}
 
@@ -29,7 +34,14 @@ type doc_id = int
 
 exception InvalidDatabase
 
-let mk_server url = url
+let mk_server
+    ?(scheme = "http")
+    ?(port = default_couchdb_port)
+    host =
+  {hostname = host;
+   scheme = scheme;
+   port = port}
+
 
 let mk_database server db =
   let valid_db name =
@@ -75,10 +87,12 @@ let request ?(content=None) ?(headers=[]) mthod url =
       
 (* TODO: Generalize over scheme *)
 let request_with_db ?(content=None) ?(headers=[]) db m components =
-  let {server = s; database = db} = db in
+  let {server = {hostname = host;
+		 scheme = scheme;
+                 port = port}; database = db} = db in
   let build_url components =
     let url_syntax = Hashtbl.find Neturl.common_url_syntax "http" in
-    Neturl.make_url ~scheme:"http" ~host:s ~path:(db :: components) 
+    Neturl.make_url ~scheme ~port ~host ~path:(db :: components) 
       url_syntax in
     request m (build_url components)
 

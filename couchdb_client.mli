@@ -8,7 +8,7 @@ type db
 type doc_id
   (** Documentation identifiers *)
 
-val mk_server : string -> t
+val mk_server : ?scheme:string -> ?port:int -> string -> t
   (** Create a new CouchDB representation object *)
 
 val mk_database : t -> string -> db
