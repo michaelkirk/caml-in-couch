@@ -43,28 +43,34 @@ module Database :
 	 
     val delete : db -> Json_type.t
       (** Delete a database on the CouchDB server *)
+
+    val info : db -> Json_type.json_type
+      (** Return information about Database *)
   end
 
-val get : db -> doc_id -> Json_type.t
-  (** Lowlevel GET *)
+module Basic :
+  sig
+    (** Basic implements the Low-level interface to CouchDB. You can
+	use these if you want, but it may be far easier to use the
+	high-level API provided as well. *)
+    val get : db -> doc_id -> Json_type.t
+      (** Lowlevel GET of doc_id. Returns the Json document *)
 
-val create : db -> Json_type.json_type -> doc_id
-  (** Lowlevel CREATE *)
+    val create : db -> Json_type.json_type -> doc_id
+      (** Lowlevel CREATE *)
 
-val delete : db -> doc_id -> unit
-  (** Lowlevel DELETE *)
+    val delete : db -> doc_id -> unit
+      (** Lowlevel DELETE *)
 
-val update : db -> doc_id -> Json_type.json_type -> unit
-  (** Lowlevel UPDATE *)
+    val update : db -> doc_id -> Json_type.json_type -> unit
+      (** Lowlevel UPDATE *)
 
-val info : db -> Json_type.json_type
-  (** Return information about Database *)
-
-val query : db
-  -> (Json_type.json_type -> 'a) (* Map *)
-  -> (Json_type.json_type -> 'a -> 'b) (* Reduce *)
-  -> 'b (* Initial element *)
-  -> 'b
-  (** Execute a Temporary View on data *)
+    val query : db
+      -> (Json_type.json_type -> 'a) (* Map *)
+      -> (Json_type.json_type -> 'a -> 'b) (* Reduce *)
+      -> 'b (* Initial element *)
+      -> 'b
+      (** Execute a Temporary View on data *)
+  end
 
 

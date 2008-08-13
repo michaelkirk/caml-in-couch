@@ -16,7 +16,7 @@ let document1 =
   Json_type.Build.objekt
     [ "rec1", Json_type.Build.int 123;
       "rec2", Json_type.Build.string "Hello World"]
-let document1_id = create test_db document1
+let document1_id = Basic.create test_db document1
 let _ = print_string document1_id
 
 let test_fixture = "couchdb_client" >:::
@@ -29,14 +29,14 @@ let test_fixture = "couchdb_client" >:::
 			());
 
   "create_document" >:: ( fun () ->
-			    let _id = create test_db document1 in
+			    let _id = Basic.create test_db document1 in
 			      ());
 
   "get_document" >:: ( fun () ->
-			 let v = get test_db document1_id in
+			 let v = Basic.get test_db document1_id in
 			   assert_equal v document1);
   "get" >:: ( fun () ->
-		let v = get test_suite_db_a "0" in
+		let v = Basic.get test_suite_db_a "0" in
 		let ht = make_table (objekt v) in
 		  assert_equal "0" (string (Hashtbl.find ht "_id"));
 		  assert_equal 0 (int (Hashtbl.find  ht "integer"));
