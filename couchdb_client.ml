@@ -38,6 +38,9 @@ let mk_database server db =
 
 module Http_method =
 struct
+  (* This module implements the different HTTP methods available in a general
+     way so we can 'plug' them into requests later on. The abstraction allows
+     us to make the code a bit simpler *)
   type t = | Get 
 	   | Put of Json_type.t 
 	   | Post of (string * string) list
@@ -61,6 +64,9 @@ end
 
 module Request =
 struct
+  (* This module implements the parts that carries out actual HTTP requests.
+     it is used by later modules for the REST communication *)
+
   (* Pipe for HTTP requests *)
   let pipe =
     let get_default_pipe () =
@@ -71,6 +77,7 @@ struct
     let pipe_empty = ref true
 
     (* Run a Pipe *)
+    (* TODO: Serialize this to make the code MT safe *)
     let l_request m =
       let p = Lazy.force pipe in
 	if not !pipe_empty then
@@ -78,7 +85,6 @@ struct
 	p#add_with_callback m (fun _ -> pipe_empty := true);
 	pipe_empty := false;
 	p # run ()
-
 
     let request ?(content=None) ?(headers=[]) mthod url =
       let str_url = Neturl.string_of_url url in
