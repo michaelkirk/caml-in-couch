@@ -238,10 +238,14 @@ module Pipeline =
 	 pipeline = p}
 
     let add {db = db; pipeline = pipeline} request =
-      pipeline # add (request db)
+      let req = (request db) in
+	pipeline # add req;
+	req
 
     let add_with_callback {db = db; pipeline = pipeline} request h =
-      pipeline # add_with_callback (request db) h
+      let req = (request db) in
+	pipeline # add_with_callback req h;
+	req
 
     let get doc_id =
       (fun (db) ->

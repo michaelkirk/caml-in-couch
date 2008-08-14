@@ -73,6 +73,7 @@ module Basic :
     (** Basic implements the Low-level interface to CouchDB. You can
 	use these if you want, but it may be far easier to use the
 	high-level API provided as well. *)
+
     val get : db -> doc_id -> Json_type.t
       (** Lowlevel GET of doc_id. Returns the Json document *)
 
@@ -93,6 +94,9 @@ module Basic :
 
 module View :
   sig
+    (** This module implements operations for managing and querying
+	temporary and permanent views in CouchDB *)
+
     val query : ?reducer:string (** Optional Reduction *)
       -> ?language:string (** Language we are using, by default
 			      Javascript *)
@@ -111,3 +115,33 @@ module View :
 	  The view is NOT prepended with '_view'. *)
   end
 
+module Pipeline :
+  sig
+    (** The pipeline module implements a pipeline API built on
+	Http_client.pipeline. The advantage of this API is that you
+	get asynchronous access to CouchDB through a pipeline of
+	requests. *)
+
+    type t
+      (** The type of asynchronous pipelines *)
+
+    val mk_pipeline : db -> t
+      (** Given a database, create a pipeline for it *)
+
+    val add : t -> (db -> Http_client.http_call) -> Http_client.http_call
+      (** Add a request to the pipeline and returns the call object *)
+
+    val add_with_callback : t -> (db -> Http_client.http_call)
+      -> (Http_client.http_call -> unit) -> Http_client.http_call
+      (** As above, but when the call completes on the pipeline, a
+	  callback function is executed. To get the state of the call,
+	  query the status of the http_call object
+
+	  Returns the call object *)
+
+    val get : doc_id -> (db -> Http_client.http_call)
+      (** A GET request for use with the pipeline interface *)
+
+    val add_get : t -> doc_id -> Http_client.http_call
+      (** Convenience: add a get request to the pipeline *)
+  end
