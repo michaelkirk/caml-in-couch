@@ -143,12 +143,16 @@ module Database =
 
 module Basic =
   struct
-    let get db doc_id =
+    let with_error thunk =
       try
-	let r = Request.with_db db Http_method.Get [doc_id] in
-	  Json_io.json_of_string (r # get_resp_body())
+	thunk ()
       with Http_client.Http_error (control_code, msg) ->
 	raise (CouchDbError (HttpError (control_code, msg)))
+
+    let get db doc_id =
+      with_error (fun () ->
+		    let r = Request.with_db db Http_method.Get [doc_id] in
+		      Json_io.json_of_string (r # get_resp_body()))
 
     let create db json =
       let r = Request.with_db db (Http_method.Post_raw json) [] in
@@ -171,13 +175,15 @@ module Basic =
 	  raise (CouchDbError (HttpError (control_code, msg)))
 
     let delete db doc_id =
-      let _r = Request.with_db db Http_method.Delete [doc_id] in
-	() (* TODO: Handle errors! *)
+      with_error (fun () ->
+		    let _r = Request.with_db db Http_method.Delete [doc_id] in
+		      ()) (* TODO: Handle return message! *)
 
     let update db doc_id json =
-      let _r = Request.with_db db (Http_method.Put json) [doc_id] in
-	() (* TODO: Handle response! *)
-
+      with_error
+	(fun () ->
+	   let _r = Request.with_db db (Http_method.Put json) [doc_id] in
+	     ()) (* TODO: Handle return message! *)
 
     (* Strictly TODO *)
     let query db mapper reducer init = init
