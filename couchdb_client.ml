@@ -146,8 +146,11 @@ module Basic =
     exception DocumentCreateError
 
     let get db doc_id =
-      let r = Request.with_db db Http_method.Get [doc_id] in
-	Json_io.json_of_string (r # get_resp_body())
+      try
+	let r = Request.with_db db Http_method.Get [doc_id] in
+	  Json_io.json_of_string (r # get_resp_body())
+      with Http_client.Http_error (control_code, msg) ->
+	raise (CouchDbError (HttpError (control_code, msg)))
 
     let create db json =
       let r = Request.with_db db (Http_method.Post_raw json) [] in

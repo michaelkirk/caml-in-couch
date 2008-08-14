@@ -17,6 +17,14 @@ type db
 type doc_id = string
   (** Documentation identifiers: these are strings *)
 
+(** Error handling *)
+type error = InvalidDatabase (** Raised for an Invalid Database *)
+	     | HttpError of int * string (** HttpErrors from CouchDb *)
+	     | ClientError of string (** Errors from this client *)
+
+exception CouchDbError of error
+  (** CouchDbError is raised upon internal errors *)
+
 val mk_server : ?scheme:string -> ?port:int -> string -> t
   (** Construct a new CouchDB representation object.
       This is a handle to a couchdb server which can be used to refer

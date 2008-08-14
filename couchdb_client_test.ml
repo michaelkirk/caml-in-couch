@@ -49,6 +49,13 @@ let test_fixture = "couchdb_client" >:::
 			 let eq_str = equaller t1 t2 string in
 			   eq_int "rec1";
 			   eq_str "rec2");
+  "get_document_non_exist" >::
+    ( fun () ->
+	try
+	  let _ = Basic.get test_db "some_non_existing_document" in
+	    ()
+	with CouchDbError (HttpError (404, msg)) ->
+	  ());
   "get" >:: ( fun () ->
 		let v = Basic.get test_suite_db_a "0" in
 		let ht = make_table (objekt v) in
