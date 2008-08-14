@@ -142,6 +142,8 @@ module Pipeline :
     val get : doc_id -> (db -> Http_client.http_call)
       (** A GET request for use with the pipeline interface *)
 
-    val add_get : t -> doc_id -> Http_client.http_call
-      (** Convenience: add a get request to the pipeline *)
+    val create : Json_type.t -> (db -> Http_client.http_call)
+      (** Create a new document containing json *)
+
+
   end

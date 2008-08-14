@@ -247,19 +247,19 @@ module Pipeline =
 	pipeline # add_with_callback req h;
 	req
 
-    let get doc_id =
-      (fun (db) ->
-	 let {server = {hostname = host;
-			scheme = scheme;
-			port = port}; database = db} = db in
-	 let url = Request.build_url scheme host port db [doc_id] in
-	 let m = Http_method.Get in
+    let q_with_db path m =
+      (fun db ->
+	 let { server = {hostname = host;
+			 scheme = scheme;
+			 port = port};
+	       database = db} = db in
+	 let url = Request.build_url scheme host port db path in
 	   Request.request m url)
 
-    let add_get pipeline doc_id =
-      add pipeline (get doc_id)
+    let get doc_id =
+      q_with_db [doc_id] Http_method.Get
 
-    let add_get_wc pipeline doc_id cb =
-      add_with_callback pipeline (get doc_id) cb
-      
+    let create json =
+      q_with_db [] (Http_method.Post_raw json)
+
   end
