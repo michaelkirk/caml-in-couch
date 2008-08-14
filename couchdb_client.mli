@@ -52,8 +52,12 @@ module Database :
     val delete : db -> Json_type.t
       (** Delete a database on the CouchDB server *)
 
-    val info : db -> Json_type.json_type
+    val info : db -> Json_type.t
       (** Return information about Database *)
+
+    val list : db -> Json_type.t
+      (** List all databases *)
+
   end
 
 module Basic :
@@ -74,7 +78,7 @@ module Basic :
     val delete : db -> doc_id -> unit
       (** Lowlevel DELETE *)
 
-    val update : db -> doc_id -> Json_type.json_type -> unit
+    val update : db -> doc_id -> Json_type.t -> unit
       (** Lowlevel UPDATE *)
 
   end

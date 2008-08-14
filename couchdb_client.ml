@@ -139,6 +139,9 @@ module Database =
       let r = Request.with_db db Http_method.Get [] in
 	Json_io.json_of_string (r # get_resp_body())
 
+    let list db =
+      let r = Request.with_db db Http_method.Get ["_all_dbs"] in
+	Json_io.json_of_string (r # get_resp_body())
   end
 
 module Basic =
