@@ -185,6 +185,11 @@ module Basic =
 	   let _r = Request.with_db db (Http_method.Put json) [doc_id] in
 	     ()) (* TODO: Handle return message! *)
 
+  end
+
+module View =
+  struct
     (* Strictly TODO *)
-    let query db mapper reducer init = init
+    let query ?reducer db mapper = Json_type.Null
+
   end

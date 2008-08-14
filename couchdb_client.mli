@@ -77,12 +77,19 @@ module Basic :
     val update : db -> doc_id -> Json_type.json_type -> unit
       (** Lowlevel UPDATE *)
 
-    val query : db
-      -> (Json_type.json_type -> 'a) (* Map *)
-      -> (Json_type.json_type -> 'a -> 'b) (* Reduce *)
-      -> 'b (* Initial element *)
-      -> 'b
-      (** Execute a Temporary View on data *)
+  end
+
+module View :
+  sig
+    val query : ?reducer:string (** Optional Reduction *)
+      -> db
+      -> string (** Map *)
+      -> Json_type.t
+      (** Execute a Temporary view on data.
+
+	  You can use the map-function to refer to a Javascript mapper
+	  and the reduce function to refer to a reduction (fold) on
+	  the data *)
   end
 
 
