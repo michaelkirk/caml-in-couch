@@ -44,7 +44,10 @@ module Database :
 	  error as an Error-number (404 for instance) and the reason string. *)
 
     val create : db -> Json_type.t
-      (** Create a new Database on the CouchDB server *)
+      (** Create a new Database on the CouchDB server
+
+          TODO: Recreates *)
+
     val create_ok : db -> unit
       (** Create a new database under the assumption that the creation
 	  will not fail. If it fails DatabaseError is raised. *)
@@ -54,6 +57,9 @@ module Database :
 
     val info : db -> Json_type.t
       (** Return information about Database *)
+
+    val compact : db -> unit
+      (** Compact the database *)
 
     val list : db -> Json_type.t
       (** List all databases *)
