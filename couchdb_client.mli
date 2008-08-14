@@ -87,11 +87,16 @@ module View :
       -> db
       -> string (** Map *)
       -> Json_type.t
-      (** Execute a Temporary view on data.
+      (** Execute a temporary view on data.
 
 	  You can use the map-function to refer to a Javascript mapper
 	  and the reduce function to refer to a reduction (fold) on
 	  the data *)
+
+    val view : db -> string -> Json_type.t
+      (** Get the contents of a permanent view.
+
+	  The view is NOT prepended with '_view'. *)
   end
 
 

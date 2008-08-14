@@ -198,4 +198,9 @@ module View =
 	   "language", Build.string language]) in
       let r = Request.with_db db (Http_method.Post_raw body) ["_temp_view"] in
 	Json_io.json_of_string (r # get_resp_body ())
+
+    let view db name =
+      let r = Request.with_db db Http_method.Get ["_view"; name] in
+	Json_io.json_of_string (r # get_resp_body ())
+
   end
