@@ -24,6 +24,10 @@ let (document1_id,
 let print_json json =
   print_string (Json_io.string_of_json ~compact:false json)
 
+let _ =
+  let r = View.query test_db "function(doc) { emit(doc._id, null); }" in
+    print_json r
+
 let test_fixture = "couchdb_client" >:::
 [
   "create_db" >:: ( fun () ->

@@ -189,7 +189,13 @@ module Basic =
 
 module View =
   struct
-    (* Strictly TODO *)
-    let query ?reducer db mapper = Json_type.Null
-
+    let query ?reducer ?(language = "javascript") db mapper =
+      let body = Build.objekt
+	((match reducer with
+	   | None -> []
+	   | Some r -> ["reduce", Build.string r])
+	@ ["map", Build.string mapper;
+	   "language", Build.string language]) in
+      let r = Request.with_db db (Http_method.Post_raw body) ["_temp_view"] in
+	Json_io.json_of_string (r # get_resp_body ())
   end

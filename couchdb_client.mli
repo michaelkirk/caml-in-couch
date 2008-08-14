@@ -82,6 +82,8 @@ module Basic :
 module View :
   sig
     val query : ?reducer:string (** Optional Reduction *)
+      -> ?language:string (** Language we are using, by default
+			      Javascript *)
       -> db
       -> string (** Map *)
       -> Json_type.t
