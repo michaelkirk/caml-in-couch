@@ -143,8 +143,6 @@ module Database =
 
 module Basic =
   struct
-    exception DocumentCreateError
-
     let get db doc_id =
       try
 	let r = Request.with_db db Http_method.Get [doc_id] in
