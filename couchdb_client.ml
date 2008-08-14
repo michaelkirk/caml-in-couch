@@ -1,5 +1,7 @@
 (* CouchDB Client implements a client for the CouchDB Document storage *)
 
+open Json_type
+
 let default_couchdb_port = 5984
 
 
@@ -12,7 +14,11 @@ type db = {server: t;
 
 type doc_id = string
 
-exception InvalidDatabase
+type error = InvalidDatabase
+	     | HttpError of int * string
+	     | ClientError of string
+
+exception CouchDbError of error
 
 (* Constructors *)
 let mk_server
@@ -34,7 +40,7 @@ let mk_database server db =
       {server = server;
        database = db}
     else
-      raise InvalidDatabase
+      raise (CouchDbError InvalidDatabase)
 
 module Http_method =
 struct
@@ -137,13 +143,31 @@ module Database =
 
 module Basic =
   struct
+    exception DocumentCreateError
+
     let get db doc_id =
       let r = Request.with_db db Http_method.Get [doc_id] in
 	Json_io.json_of_string (r # get_resp_body())
 
     let create db json =
       let r = Request.with_db db (Http_method.Post_raw json) [] in
-	(r # get_resp_body())
+	Json_io.json_of_string (r # get_resp_body())
+
+    let create_ok db json =
+      let handle_response r =
+	let o = Browse.make_table (Browse.objekt r) in
+	  (Browse.bool (Browse.field o "ok"),
+	   Browse.string (Browse.field o "id"),
+	   Browse.string (Browse.field o "rev")) in
+	try
+	  let (ok, id, rev) = handle_response (create db json) in
+	    match ok with
+	      | true -> (id, rev)
+	      | false -> raise
+		  (CouchDbError
+		     (ClientError "Document Creation returned 'ok': false"))
+	with Http_client.Http_error(control_code, msg) ->
+	  raise (CouchDbError (HttpError (control_code, msg)))
 
     let delete db doc_id =
       let _r = Request.with_db db Http_method.Delete [doc_id] in

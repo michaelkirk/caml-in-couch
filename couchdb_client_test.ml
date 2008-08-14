@@ -16,8 +16,13 @@ let document1 =
   Json_type.Build.objekt
     [ "rec1", Json_type.Build.int 123;
       "rec2", Json_type.Build.string "Hello World"]
-let document1_id = Basic.create test_db document1
-let _ = print_string document1_id
+exception TestError of string
+
+let (document1_id,
+     document1_rev) = Basic.create_ok test_db document1
+
+let print_json json =
+  print_string (Json_io.string_of_json ~compact:false json)
 
 let test_fixture = "couchdb_client" >:::
 [
@@ -34,7 +39,16 @@ let test_fixture = "couchdb_client" >:::
 
   "get_document" >:: ( fun () ->
 			 let v = Basic.get test_db document1_id in
-			   assert_equal v document1);
+			 let t1 = make_table (objekt document1) in
+			 let t2 = make_table (objekt v) in
+			 let equaller t1 t2 ty fieldname =
+			   assert_equal
+			     (ty (field t1 fieldname))
+			     (ty (field t2 fieldname)) in
+			 let eq_int = equaller t1 t2 int in
+			 let eq_str = equaller t1 t2 string in
+			   eq_int "rec1";
+			   eq_str "rec2");
   "get" >:: ( fun () ->
 		let v = Basic.get test_suite_db_a "0" in
 		let ht = make_table (objekt v) in

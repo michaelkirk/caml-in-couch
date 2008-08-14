@@ -56,8 +56,12 @@ module Basic :
     val get : db -> doc_id -> Json_type.t
       (** Lowlevel GET of doc_id. Returns the Json document *)
 
-    val create : db -> Json_type.json_type -> doc_id
+    val create : db -> Json_type.t -> Json_type.t
       (** Lowlevel CREATE *)
+
+    val create_ok : db -> Json_type.t -> (string * string)
+      (** Create a document under the assemption that it can be
+	  created. *)  
 
     val delete : db -> doc_id -> unit
       (** Lowlevel DELETE *)
