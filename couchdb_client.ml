@@ -262,4 +262,10 @@ module Pipeline =
     let create json =
       q_with_db [] (Http_method.Post_raw json)
 
+    let delete doc_id =
+      q_with_db [doc_id] Http_method.Delete
+
+    let update doc_id json =
+      q_with_db [doc_id] (Http_method.Put json)
+
   end

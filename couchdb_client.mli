@@ -145,5 +145,11 @@ module Pipeline :
     val create : Json_type.t -> (db -> Http_client.http_call)
       (** Create a new document containing json *)
 
+    val delete : doc_id -> (db -> Http_client.http_call)
+      (** Delete a document *)
+
+    val update : doc_id 
+      -> Json_type.t -> (db -> Http_client.http_call)
+      (** Update a document *)
 
   end
