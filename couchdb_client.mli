@@ -111,4 +111,3 @@ module View :
 	  The view is NOT prepended with '_view'. *)
   end
 
-

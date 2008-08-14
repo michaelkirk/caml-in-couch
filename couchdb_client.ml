@@ -73,6 +73,12 @@ struct
   (* This module implements the parts that carries out actual HTTP requests.
      it is used by later modules for the REST communication *)
 
+  let http_url_syntax = Hashtbl.find Neturl.common_url_syntax "http"
+  let build_url scheme host port db components =
+      let path = "" :: db :: components in
+	Neturl.make_url
+	  ~scheme ~host ~port ~path http_url_syntax
+
   (* Pipe for HTTP requests *)
   let pipe =
     let get_default_pipe () =
@@ -92,7 +98,7 @@ struct
 	pipe_empty := false;
 	p # run ()
 
-    let request ?(content=None) ?(headers=[]) mthod url =
+    let simple_request ?(content=None) ?(headers=[]) mthod url =
       let str_url = Neturl.string_of_url url in
       let call = Http_method.to_http_call mthod str_url in
       let augmented_headers =
@@ -106,17 +112,25 @@ struct
 	l_request call;
 	call
       
+    let request ?content ?(headers=[]) mthod url =
+      let str_url = Neturl.string_of_url url in
+      let call = Http_method.to_http_call mthod str_url in
+      let augmented_headers =
+	headers @
+	  ["Accept", "application/json"] @
+	  match mthod with
+	    | Http_method.Put _ -> ["Content-Type", "application/json"]
+	    | Http_method.Post_raw _ -> ["Content-Type", "application/json"]
+	    | _ -> [] in
+      let header = new Netmime.basic_mime_header ~ro:true augmented_headers in
+	call # set_request_header header;
+	call
+
     let with_db ?(content=None) ?(headers=[]) db m components =
       let {server = {hostname = host;
 		     scheme = scheme;
                      port = port}; database = db} = db in
-      let build_url components =
-	let url_syntax = Hashtbl.find Neturl.common_url_syntax "http" in
-	let path = "" :: db :: components in
-	  Neturl.make_url
-	    ~scheme ~port ~host ~path
-	    (Neturl.partial_url_syntax url_syntax) in
-	request m (build_url components)
+	simple_request m (build_url scheme host port db components)
   end
 
 module Database =
@@ -210,4 +224,38 @@ module View =
       let r = Request.with_db db Http_method.Get ["_view"; name] in
 	Json_io.json_of_string (r # get_resp_body ())
 
+  end
+
+module Pipeline =
+  struct
+    type t = {db: db;
+	      pipeline: Http_client.pipeline}
+
+    let mk_pipeline db =
+      let p = new Http_client.pipeline in
+	p # set_proxy_from_environment();
+	{db = db;
+	 pipeline = p}
+
+    let add {db = db; pipeline = pipeline} request =
+      pipeline # add (request db)
+
+    let add_with_callback {db = db; pipeline = pipeline} request h =
+      pipeline # add_with_callback (request db) h
+
+    let get doc_id =
+      (fun (db) ->
+	 let {server = {hostname = host;
+			scheme = scheme;
+			port = port}; database = db} = db in
+	 let url = Request.build_url scheme host port db [doc_id] in
+	 let m = Http_method.Get in
+	   Request.request m url)
+
+    let add_get pipeline doc_id =
+      add pipeline (get doc_id)
+
+    let add_get_wc pipeline doc_id cb =
+      add_with_callback pipeline (get doc_id) cb
+      
   end
