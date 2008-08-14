@@ -53,7 +53,9 @@ module Database :
 	  will not fail. If it fails DatabaseError is raised. *)
 	 
     val delete : db -> Json_type.t
-      (** Delete a database on the CouchDB server *)
+      (** Delete a database on the CouchDB server
+
+          TODO: Errors *)
 
     val info : db -> Json_type.t
       (** Return information about Database *)
